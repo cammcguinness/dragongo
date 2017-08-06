@@ -35,8 +35,8 @@ class HomeScreen extends React.Component {
       <ScrollView>
       <View style={styles.container}>
 
-          {this.props.dragons.map((dragon,index) => (
-            <Dragon key={index} id={dragon.id} name={dragon.name} level={dragon.level} description={'Makes '+formatValue(calculateDragonGPS(dragon))+'GPS'} />
+          {this.props.dragons.filter(dragon=>dragon!=undefined).map((dragon,index) => (
+            <Dragon key={index} id={dragon.id} name={dragon.name} level={dragon.level} dragon={dragon} description={'Makes '+formatValue(calculateDragonGPS(dragon))+'GPS'} />
           ))}
 
       </View>

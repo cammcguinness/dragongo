@@ -1,6 +1,6 @@
 import {Alert} from 'react-native';
 import {STEP_TAKEN,UPGRADE_BOUGHT,SET_STATE,DRAGON_UPGRADED,OFFLINE_PRODUCTION,
-  TOGGLE_ACTIVE_EGG,START_BREED,DRAGON_ADDED_TO_HABITAT,COLLECT_GOLD,UPGRADE_HABITAT,BUY_HABITAT,DRAGON_REMOVED_FROM_HABITAT,START_FARM,COLLECT_FARM} from '../actions';
+  TOGGLE_ACTIVE_EGG,START_BREED,DRAGON_ADDED_TO_HABITAT,COLLECT_GOLD,UPGRADE_HABITAT,BUY_HABITAT,DRAGON_REMOVED_FROM_HABITAT,START_FARM,COLLECT_FARM,SELL_DRAGON} from '../actions';
 import {STEPS_FOR_EGG,saveState,getUpgrade,calculateCost,calculateFood,calculateDragonUpgradeCost,calculateTotalGPS,updateActiveEggs,getUpgradeLevel,randomEgg,
 eggStepCount,CURRENT_VERSION,maxEggCount,updateDens,updateEggDiscovery,updateHabitats,getHabitatUpgradeCost,updateFarms} from '../utilities/util';
 import {HABITATS} from '../data/habitats';
@@ -97,11 +97,11 @@ export default function(state,action){
           break;
         }
       }*/
-      //console.log("Offline steps: "+action.steps);
-      var goldAdd = Math.floor((newState.resources.gps*(action.steps)));
-      var foodAdd = Math.floor((newState.resources.fps*(action.steps)));
+      console.log("Offline steps: "+action.steps);
+      //var goldAdd = Math.floor((newState.resources.gps*(action.steps)));
+      //var foodAdd = Math.floor((newState.resources.fps*(action.steps)));
       var stepsTaken = Math.floor(action.steps);
-      newState = updateDens(newState,stepsTaken);
+      //newState = updateDens(newState,stepsTaken);
       //newState.resources.gold+=goldAdd;
       //newState.resources.food+=foodAdd;
       if(stepsTaken > 0){
@@ -229,6 +229,27 @@ export default function(state,action){
       var farm = action.farm;
       newState.resources.food += farm.food.food;
       newState.farms[action.index] = {id: action.farm.id,level: action.farm.level,active:false};
+
+      saveState(newState);
+      return newState;
+    case SELL_DRAGON:
+      newState = cloneObject(state);
+      var dragon = action.dragon;
+      //console.log("Selling Dragon: "+dragon.id+","+dragon.name);
+
+      var index = -1;
+      for(var i=0;i<newState.dragons.length;i++){
+        if(newState.dragons[i].id==dragon.id){
+          index = i;
+          break;
+        }
+      }
+      //console.log("Index: "+index);
+      //console.log("dragons.length = "+newState.dragons.length);
+      if(index>-1){
+        newState.dragons.splice(index,1);
+        newState.resources.gold+=dragon.steps*2;
+      }
 
       saveState(newState);
       return newState;

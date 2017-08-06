@@ -48,9 +48,10 @@ class Habitat extends React.Component{
     if(this.props.level <= index){
       return null;
     }
+
     //console.log(this.props.dragons);
     let pickers1 = this.props.dragons.filter(dragon=>(dragon.habitat==undefined||dragon.habitat==-1)&&dragon.habitats.indexOf(this.props.habitatID)>-1).map(function(dragon,index){
-      //console.log("Can have "+dragon.name);
+
       return <Picker.Item key={index} value={dragon.id} label={dragon.name+'(Level: '+dragon.level+')'} />
     }.bind(this));
     return this.props.selectedDragons[index]==-1?<Picker selectedValue={this.props.selectedDragons[index]} onValueChange={(itemValue, itemIndex) => this.setDragon(index,itemValue)}>

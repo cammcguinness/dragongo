@@ -13,6 +13,7 @@ export const BUY_HABITAT = "BUY_HABITAT";
 export const COLLECT_FARM = "COLLECT_FARM";
 export const START_FARM = "START_FARM";
 export const UPGRADE_FARM = "UPGRADE_FARM";
+export const SELL_DRAGON = "SELL_DRAGON";
 export function step(amount){
     return {type: STEP_TAKEN, amount: amount}
 }
@@ -68,4 +69,7 @@ export function collectFarm(farm,index){
 
 export function startFarm(farm,food,index){
   return {type: START_FARM,farm: farm,food: food,index};
+}
+export function sellDragon(dragon){
+  return {type: SELL_DRAGON,dragon:dragon};
 }

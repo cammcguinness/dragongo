@@ -13,7 +13,10 @@ export const RESOURCE_MULTI = 1.6;
 export const STEPS = [10000,20000,50000,100000];
 export const STEPS_FOR_EGG = 10000;
 
-
+export var saveFileName = "@DragonGo";
+if(__DEV__){
+  saveFileName = "@DragonGoDev";
+}
 
 
 
@@ -36,7 +39,9 @@ export function calculateDragonUpgradeCost(level){
 }
 
 export function calculateDragonGPS(dragon){
-
+  if(dragon==undefined){
+    return 0;
+  }
   return dragon.gold*Math.pow(RESOURCE_MULTI,dragon.level);
 }
 
@@ -75,9 +80,11 @@ export function updateDens(newState,steps){
   let numDens = getNumberofDens(newState.skills);
   //console.log("Updating dens: "+numDens);
   //console.log("Number of dens made: "+newState.dens.length);
-  newState.dens.filter(den=>den.active).map((den,index)=>{
+  newState.dens.map((den,index)=>{
+
     den.stepsLeft -=steps;
-    if(den.stepsLeft<=0&&newState.eggs.length < maxEggCount(newState.skills)){
+    //console.log("Den#"+index+", stepsLeft="+den.stepsLeft,);
+    if(den.active&&den.stepsLeft<=0&&newState.eggs.length < maxEggCount(newState.skills)){
       ToastAndroid.show("One of your breeding dens has finished!",ToastAndroid.LONG);
       let egg = den.egg;
       egg.id = newState.eggMaxID+1;
@@ -96,6 +103,7 @@ export function updateDens(newState,steps){
     }
     else if(den.stepsLeft <=0){
       den.stepsLeft = 0;
+      newState.dens[index] = den;
     }
   });
   return newState;
@@ -110,7 +118,7 @@ export async function saveState(state){
     state.loaded = false;
     state.lastUpdate = new Date();
     //console.log("Saving state, food="+state.resources.food);
-    await AsyncStorage.setItem('@DragonGo:state', JSON.stringify(state));
+    await AsyncStorage.setItem(saveFileName+':state', JSON.stringify(state));
   } catch (error) {
     console.log("Error saving data: "+error);
   }
@@ -219,9 +227,22 @@ export function randomDragon(maxSteps,weather={}){
       console.log(allowed[i].name);
     }
     console.log("-=-=--==-===--===============------------=-=-=-=-=--==-");*/
-    let rand = Math.floor((Math.random() * allowed.length));
-    allowed[rand].level = 0;
-    return allowed[rand];
+    // let rand = Math.floor((Math.random() * allowed.length));
+    // allowed[rand].level = 0;
+    // return allowed[rand];
+    let total = 0;
+    for(var i=0;i<allowed.length;i++){
+      total+=allowed[i].weight;
+    }
+    var rand = Math.random()*total;
+    let current = 0;
+    for(var i=0;i<allowed.length;i++){
+      current+=allowed[i].weight;
+      if(current >= rand){
+        return allowed[i];
+      }
+    }
+
 }
 
 export function randomEgg(maxSteps,weather={}){
